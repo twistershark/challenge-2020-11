@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   TouchableOpacity,
   View,
@@ -7,51 +7,84 @@ import {
   Image,
   TextInput,
   FlatList,
+  ActivityIndicator,
 } from 'react-native';
 
 import EStyleSheet from 'react-native-extended-stylesheet';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
 
+import api from '../../services/api';
+
 import logoImg from '../../assets/logo.png';
 
-const Dashboard: React.FC = () => {
-  const [searchValue, setSearchValue] = useState('');
+interface Movie {
+  id: string;
+  title: string;
+  year: string;
+  poster: string;
+  isFavorite: boolean;
+}
 
+const Dashboard: React.FC = () => {
+  const [movies, setMovies] = useState<Movie[]>([]);
+  const [page, setPage] = useState(1);
+  const [totalResults, setTotalResults] = useState(0);
+  const [searchValue, setSearchValue] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigation = useNavigation();
 
-  const movies = [
-    {
-      id: 'tt2975590',
-      title: 'Batman v Superman: Dawn of Justice',
-      plot:
-        'Fearing that the actions of Superman are left unchecked, Batman takes on the Man of Steel, while the world wrestles with what kind of a hero it really needs.',
-      year: '2019',
-      poster:
-        'https://m.media-amazon.com/images/M/MV5BYThjYzcyYzItNTVjNy00NDk0LTgwMWQtYjMwNmNlNWJhMzMyXkEyXkFqcGdeQXVyMTQxNzMzNDI@._V1_SX300.jpg',
-      isFavorite: false,
+  const findMovies = useCallback(
+    async (movieName: string) => {
+      setLoading(true);
+
+      const response = await api.get(
+        `?apikey=925eba28&s=${movieName}&page=${page}`,
+      );
+
+      setTotalResults(response.data.totalResults);
+
+      const newMovies = response.data.Search.map(movie => ({
+        id: movie.imdbID,
+        title: movie.Title,
+        year: movie.Year,
+        poster: movie.Poster,
+        isFavorite: false,
+      }));
+
+      setMovies([...movies, ...newMovies]);
+
+      setLoading(false);
+      setPage(page + 1);
     },
-    {
-      id: 'tt2975595',
-      title: 'Batman v Superman: Dawn of Justice',
-      plot:
-        'Fearing that the actions of Superman are left unchecked, Batman takes on the Man of Steel, while the world wrestles with what kind of a hero it really needs.',
-      year: '2019',
-      poster:
-        'https://m.media-amazon.com/images/M/MV5BYThjYzcyYzItNTVjNy00NDk0LTgwMWQtYjMwNmNlNWJhMzMyXkEyXkFqcGdeQXVyMTQxNzMzNDI@._V1_SX300.jpg',
-      isFavorite: false,
+    [movies, page],
+  );
+
+  const handleSearchValue = useCallback(
+    (value: string) => {
+      if (page !== 1) {
+        setPage(1);
+      }
+
+      if (movies) {
+        setMovies([]);
+        setTotalResults(0);
+      }
+      setSearchValue(value);
     },
-    {
-      id: 'tt2975690',
-      title: 'Batman v Superman: Dawn of Justice',
-      plot:
-        'Fearing that the actions of Superman are left unchecked, Batman takes on the Man of Steel, while the world wrestles with what kind of a hero it really needs.',
-      year: '2019',
-      poster:
-        'https://m.media-amazon.com/images/M/MV5BYThjYzcyYzItNTVjNy00NDk0LTgwMWQtYjMwNmNlNWJhMzMyXkEyXkFqcGdeQXVyMTQxNzMzNDI@._V1_SX300.jpg',
-      isFavorite: false,
-    },
-  ];
+    [movies, page],
+  );
+
+  const renderFooter = useCallback(() => {
+    if (!loading) {
+      return null;
+    }
+    return (
+      <View style={styles.loading}>
+        <ActivityIndicator color="#224358" size={50} />
+      </View>
+    );
+  }, [loading]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -75,18 +108,27 @@ const Dashboard: React.FC = () => {
           placeholderTextColor="#B7B7CC"
           style={styles.textInput}
           value={searchValue}
-          onChangeText={text => setSearchValue(text)}
+          onChangeText={text => handleSearchValue(text)}
+          onSubmitEditing={() => findMovies(searchValue)}
         />
       </View>
 
-      <Text style={styles.foundMovies}>We found 405 movies:</Text>
+      <Text style={styles.foundMovies}>
+        {`We found ${totalResults} movies:`}
+      </Text>
 
       <FlatList
         style={styles.moviesList}
         data={movies}
-        keyExtractor={item => item.id}
+        onEndReached={() => findMovies(searchValue)}
+        onEndReachedThreshold={0.1}
+        ListFooterComponent={renderFooter}
+        keyExtractor={(movie, index) => {
+          return movie.id + index;
+        }}
         renderItem={({ item }) => (
           <TouchableOpacity
+            key={item.id}
             onPress={() => navigation.navigate('MovieDetail', { id: item.id })}
             style={styles.movieCard}
           >
@@ -107,7 +149,6 @@ const Dashboard: React.FC = () => {
                 />
               </View>
 
-              <Text style={styles.movieDescription}>{item.plot}</Text>
               <Text style={styles.movieYear}>{item.year}</Text>
             </View>
           </TouchableOpacity>
@@ -236,7 +277,7 @@ const styles = EStyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
 
-    paddingRight: '1rem',
+    paddingRight: '0.25rem',
   },
 
   movieTitle: {
@@ -248,18 +289,8 @@ const styles = EStyleSheet.create({
     color: '#224358',
   },
 
-  movieDescription: {
-    fontFamily: 'Roboto-Regular',
-    fontWeight: 'normal',
-    fontStyle: 'normal',
-    fontSize: '0.75rem',
-    lineHeight: '1rem',
-    marginTop: '0.375rem',
-    color: '#859BA9',
-  },
-
   movieYear: {
-    textAlign: 'right',
+    textAlign: 'left',
     color: '#224358',
     fontWeight: 'bold',
   },
@@ -274,6 +305,10 @@ const styles = EStyleSheet.create({
     fontFamily: 'Roboto-Bold',
     textAlign: 'center',
     color: 'red',
+  },
+
+  loading: {
+    marginBottom: '3rem',
   },
 });
 
