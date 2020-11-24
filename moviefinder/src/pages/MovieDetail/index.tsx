@@ -3,6 +3,7 @@ import { SafeAreaView, View, Image, Text, ScrollView } from 'react-native';
 import EStyleSheet from 'react-native-extended-stylesheet';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import * as Animatable from 'react-native-animatable';
 
 import api from '../../services/api';
 
@@ -30,6 +31,7 @@ interface Params {
 
 const MovieDetail: React.FC = () => {
   const [movie, setMovie] = useState<Movie>();
+  const duration = 400;
 
   const navigation = useNavigation();
   const route = useRoute();
@@ -67,58 +69,116 @@ const MovieDetail: React.FC = () => {
       <ScrollView style={styles.container}>
         {movie ? (
           <>
-            <Image
+            <Animatable.Image
+              animation="fadeInUp"
+              delay={duration - 200}
               style={styles.poster}
               source={{
                 uri: movie.poster,
               }}
             />
+            <View style={styles.detail}>
+              <Animatable.Text
+                animation="fadeInUp"
+                delay={duration}
+                style={styles.movieTitle}
+              >
+                {movie.title}
+              </Animatable.Text>
 
-            <Text style={styles.movieTitle}>{movie.title}</Text>
+              <View style={{ flexDirection: 'row' }}>
+                <Animatable.Text
+                  animation="bounceIn"
+                  delay={duration * 2}
+                  style={styles.movieData}
+                >
+                  {movie.year}
+                </Animatable.Text>
+                <Animatable.Text
+                  animation="bounceIn"
+                  delay={duration * 3}
+                  style={styles.movieData}
+                >
+                  {movie.rated}
+                </Animatable.Text>
+                <Animatable.Text
+                  animation="bounceIn"
+                  delay={duration * 4}
+                  style={styles.movieData}
+                >
+                  {movie.duration}
+                </Animatable.Text>
+              </View>
 
-            <View style={{ flexDirection: 'row' }}>
-              <Text style={styles.movieData}>{movie.year}</Text>
-              <Text style={styles.movieData}>{movie.rated}</Text>
-              <Text style={styles.movieData}>{movie.duration}</Text>
-            </View>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  flexWrap: 'wrap',
+                }}
+              >
+                {movie.genre.map((genre, index) => (
+                  <Animatable.View
+                    animation="fadeIn"
+                    delay={duration + 100 * index}
+                    key={genre}
+                    style={styles.movieCategory}
+                  >
+                    <Text style={styles.categoryText}>{genre}</Text>
+                  </Animatable.View>
+                ))}
+              </View>
 
-            <View
-              style={{
-                flexDirection: 'row',
-                flexWrap: 'wrap',
-              }}
-            >
-              {movie.genre.map(genre => (
-                <View key={genre} style={styles.movieCategory}>
-                  <Text style={styles.categoryText}>{genre}</Text>
-                </View>
-              ))}
-            </View>
+              <Animatable.Text
+                animation="fadeInUp"
+                delay={duration * 5}
+                style={styles.title}
+              >
+                Plot Summary
+              </Animatable.Text>
+              <Animatable.Text
+                animation="fadeInUp"
+                delay={duration * 5}
+                style={styles.plotText}
+              >
+                {movie.plot}
+              </Animatable.Text>
 
-            <Text style={styles.title}>Plot Summary</Text>
-            <Text style={styles.plotText}>{movie.plot}</Text>
+              <Animatable.View
+                animation="fadeInUp"
+                delay={duration * 5}
+                style={styles.ratingContainer}
+              >
+                {movie.ratings.map(rating => (
+                  <View key={rating.value}>
+                    <Text style={styles.ratingTitle}>{rating.source}</Text>
+                    <Text style={styles.ratingValue}>{rating.value}</Text>
+                  </View>
+                ))}
+              </Animatable.View>
 
-            <View style={styles.ratingContainer}>
-              {movie.ratings.map(rating => (
-                <View key={rating.value}>
-                  <Text style={styles.ratingTitle}>{rating.source}</Text>
-                  <Text style={styles.ratingValue}>{rating.value}</Text>
-                </View>
-              ))}
-            </View>
+              <Animatable.Text
+                animation="fadeInUp"
+                delay={duration * 5}
+                style={styles.title}
+              >
+                Cast and Crew
+              </Animatable.Text>
+              <Animatable.View
+                animation="fadeInUp"
+                delay={duration * 5}
+                style={styles.crew}
+              >
+                <Text style={styles.subtitle}>Director</Text>
 
-            <Text style={styles.title}>Cast and Crew</Text>
-            <View style={styles.crew}>
-              <Text style={styles.subtitle}>Director</Text>
+                <Text style={styles.text}>{movie.director}</Text>
 
-              <Text style={styles.text}>{movie.director}</Text>
-
-              <Text style={styles.subtitle}>Actors</Text>
-              {movie.actors.map(actor => (
-                <Text key={actor} style={styles.text}>
-                  {actor}
-                </Text>
-              ))}
+                <Text style={styles.subtitle}>Actors</Text>
+                {movie.actors.map(actor => (
+                  <Text key={actor} style={styles.text}>
+                    {actor}
+                  </Text>
+                ))}
+              </Animatable.View>
             </View>
           </>
         ) : (
@@ -233,4 +293,6 @@ const styles = EStyleSheet.create({
     fontSize: '1rem',
     color: '#859BA9',
   },
+
+  detail: {},
 });
