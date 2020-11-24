@@ -4,6 +4,7 @@ import { NavigationContainer } from '@react-navigation/native';
 
 import Dashboard from '../pages/Dashboard';
 import MovieDetail from '../pages/MovieDetail';
+import Favorites from '../pages/Favorites';
 
 const App = createStackNavigator();
 
@@ -20,6 +21,14 @@ const AppRoutes: React.FC = () => (
       <App.Screen
         name="MovieDetail"
         component={MovieDetail}
+        options={{
+          headerShown: false,
+        }}
+      />
+
+      <App.Screen
+        name="Favorites"
+        component={Favorites}
         options={{
           headerShown: false,
         }}

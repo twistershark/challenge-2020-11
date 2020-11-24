@@ -9,70 +9,41 @@ import {
   FlatList,
   ActivityIndicator,
 } from 'react-native';
+import ActionButton from 'react-native-action-button';
 
 import EStyleSheet from 'react-native-extended-stylesheet';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
 
-import api from '../../services/api';
-
 import logoImg from '../../assets/logo.png';
-
-interface Movie {
-  id: string;
-  title: string;
-  year: string;
-  poster: string;
-  isFavorite: boolean;
-}
+import { useMovie } from '../../hooks/movie';
 
 const Dashboard: React.FC = () => {
-  const [movies, setMovies] = useState<Movie[]>([]);
-  const [page, setPage] = useState(1);
-  const [totalResults, setTotalResults] = useState(0);
+  const {
+    movies,
+    page,
+    emptyMovies,
+    handleSetPage,
+    loading,
+    findMovies,
+    totalResults,
+  } = useMovie();
+
   const [searchValue, setSearchValue] = useState('');
-  const [loading, setLoading] = useState(false);
   const navigation = useNavigation();
-
-  const findMovies = useCallback(
-    async (movieName: string) => {
-      setLoading(true);
-
-      const response = await api.get(
-        `?apikey=925eba28&s=${movieName}&page=${page}`,
-      );
-
-      setTotalResults(response.data.totalResults);
-
-      const newMovies = response.data.Search.map(movie => ({
-        id: movie.imdbID,
-        title: movie.Title,
-        year: movie.Year,
-        poster: movie.Poster,
-        isFavorite: false,
-      }));
-
-      setMovies([...movies, ...newMovies]);
-
-      setLoading(false);
-      setPage(page + 1);
-    },
-    [movies, page],
-  );
 
   const handleSearchValue = useCallback(
     (value: string) => {
       if (page !== 1) {
-        setPage(1);
+        handleSetPage();
       }
 
       if (movies) {
-        setMovies([]);
-        setTotalResults(0);
+        emptyMovies();
       }
       setSearchValue(value);
     },
-    [movies, page],
+    [emptyMovies, handleSetPage, movies, page],
   );
 
   const renderFooter = useCallback(() => {
@@ -164,6 +135,15 @@ const Dashboard: React.FC = () => {
           You haven't searched for a movie yet!
         </Text>
       )}
+      <ActionButton
+        buttonColor="#ffd88f"
+        offsetX={10}
+        offsetY={10}
+        renderIcon={() => (
+          <Icon name="star" style={{ fontSize: 20, color: '#224358' }} />
+        )}
+        onPress={() => navigation.navigate('Favorites')}
+      />
     </SafeAreaView>
   );
 };
