@@ -8,7 +8,6 @@ import {
   TextInput,
   FlatList,
   ActivityIndicator,
-  Dimensions,
 } from 'react-native';
 
 import EStyleSheet from 'react-native-extended-stylesheet';
@@ -133,7 +132,8 @@ const Dashboard: React.FC = () => {
               <TouchableOpacity
                 key={item.id}
                 onPress={() =>
-                  navigation.navigate('MovieDetail', { id: item.id })}
+                  navigation.navigate('MovieDetail', { id: item.id })
+                }
                 style={styles.movieCard}
               >
                 <Image
@@ -164,7 +164,6 @@ const Dashboard: React.FC = () => {
           You haven't searched for a movie yet!
         </Text>
       )}
-      <View style={styles.detail} />
     </SafeAreaView>
   );
 };
@@ -316,14 +315,6 @@ const styles = EStyleSheet.create({
 
   loading: {
     marginBottom: '3rem',
-  },
-
-  detail: {
-    position: 'absolute',
-    width: '100%',
-    height: '100%',
-    backgroundColor: 'red',
-    transform: [{ translateY: Dimensions.get('window').height }],
   },
 });
 
