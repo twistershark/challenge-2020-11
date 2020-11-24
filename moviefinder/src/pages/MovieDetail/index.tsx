@@ -1,92 +1,129 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { SafeAreaView, View, Image, Text, ScrollView } from 'react-native';
 import EStyleSheet from 'react-native-extended-stylesheet';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useNavigation, useRoute } from '@react-navigation/native';
+
+import api from '../../services/api';
+
+interface Rating {
+  source: string;
+  value: string;
+}
+
+interface Movie {
+  title: string;
+  year: string;
+  rated: string;
+  poster: string;
+  duration: string;
+  genre: string[];
+  plot: string;
+  ratings: Rating[];
+  director: string;
+  actors: string[];
+}
 
 interface Params {
   id: string;
 }
 
 const MovieDetail: React.FC = () => {
+  const [movie, setMovie] = useState<Movie>();
+
   const navigation = useNavigation();
   const route = useRoute();
   const routeParams = route.params as Params;
 
+  useEffect(() => {
+    api.get(`?apikey=925eba28&i=${routeParams.id}`).then(response =>
+      setMovie({
+        title: response.data.Title,
+        year: response.data.Year,
+        rated: response.data.Rated,
+        poster: response.data.Poster,
+        duration: response.data.Runtime,
+        genre: response.data.Genre.split(', '),
+        plot: response.data.Plot,
+        ratings: response.data.Ratings.map((rating: any) => ({
+          source: rating.Source,
+          value: rating.Value,
+        })),
+        director: response.data.Director,
+        actors: response.data.Actors.split(', '),
+      }),
+    );
+  }, [routeParams.id]);
+
   return (
     <SafeAreaView style={{ backgroundColor: '#fff', flex: 1 }}>
       <Icon
-        onPress={() => navigation.goBack()}
+        onPress={() => navigation.navigate('Dashboard')}
         style={styles.backIcon}
         name="arrow-back-outline"
         size={36}
         color="#1B384A"
       />
       <ScrollView style={styles.container}>
-        <Image
-          style={styles.poster}
-          source={{
-            uri:
-              'https://m.media-amazon.com/images/M/MV5BYThjYzcyYzItNTVjNy00NDk0LTgwMWQtYjMwNmNlNWJhMzMyXkEyXkFqcGdeQXVyMTQxNzMzNDI@._V1_SX300.jpg',
-          }}
-        />
+        {movie ? (
+          <>
+            <Image
+              style={styles.poster}
+              source={{
+                uri: movie.poster,
+              }}
+            />
 
-        <Text style={styles.movieTitle}>Ford v Ferrari</Text>
+            <Text style={styles.movieTitle}>{movie.title}</Text>
 
-        <View style={{ flexDirection: 'row' }}>
-          <Text style={styles.movieData}>2019</Text>
-          <Text style={styles.movieData}>PG-13</Text>
-          <Text style={styles.movieData}>2h32min</Text>
-        </View>
+            <View style={{ flexDirection: 'row' }}>
+              <Text style={styles.movieData}>{movie.year}</Text>
+              <Text style={styles.movieData}>{movie.rated}</Text>
+              <Text style={styles.movieData}>{movie.duration}</Text>
+            </View>
 
-        <View style={{ flexDirection: 'row' }}>
-          <View style={styles.movieCategory}>
-            <Text style={styles.categoryText}>Action</Text>
-          </View>
-          <View style={styles.movieCategory}>
-            <Text style={styles.categoryText}>Biography</Text>
-          </View>
+            <View
+              style={{
+                flexDirection: 'row',
+                flexWrap: 'wrap',
+              }}
+            >
+              {movie.genre.map(genre => (
+                <View key={genre} style={styles.movieCategory}>
+                  <Text style={styles.categoryText}>{genre}</Text>
+                </View>
+              ))}
+            </View>
 
-          <View style={styles.movieCategory}>
-            <Text style={styles.categoryText}>Drama</Text>
-          </View>
-        </View>
+            <Text style={styles.title}>Plot Summary</Text>
+            <Text style={styles.plotText}>{movie.plot}</Text>
 
-        <Text style={styles.title}>Plot Summary</Text>
-        <Text style={styles.plotText}>
-          American car designer Carroll Shelby and driver Kn Miles battle
-          corporate interference and the laws of physics to build a
-          revolutionary race car for Ford in order.
-        </Text>
+            <View style={styles.ratingContainer}>
+              {movie.ratings.map(rating => (
+                <View key={rating.value}>
+                  <Text style={styles.ratingTitle}>{rating.source}</Text>
+                  <Text style={styles.ratingValue}>{rating.value}</Text>
+                </View>
+              ))}
+            </View>
 
-        <View style={styles.ratingContainer}>
-          <View>
-            <Text style={styles.ratingTitle}>IMDb</Text>
-            <Text style={styles.ratingValue}>6.4/10</Text>
-          </View>
-          <View>
-            <Text style={styles.ratingTitle}>Rotten Tomatoes</Text>
-            <Text style={styles.ratingValue}>28%</Text>
-          </View>
-          <View>
-            <Text style={styles.ratingTitle}>Metacritic</Text>
-            <Text style={styles.ratingValue}>44/100</Text>
-          </View>
-        </View>
+            <Text style={styles.title}>Cast and Crew</Text>
+            <View style={styles.crew}>
+              <Text style={styles.subtitle}>Director</Text>
 
-        <Text style={styles.title}>Cast and Crew</Text>
-        <View style={styles.crew}>
-          <Text style={styles.subtitle}>Director</Text>
+              <Text style={styles.text}>{movie.director}</Text>
 
-          <Text style={styles.text}>Zack Snyder</Text>
-
-          <Text style={styles.subtitle}>Actors</Text>
-
-          <Text style={styles.text}>Ben Affleck</Text>
-          <Text style={styles.text}>Henry Cavill</Text>
-          <Text style={styles.text}>Amy Adams</Text>
-          <Text style={styles.text}>Jesse Eisenberg</Text>
-        </View>
+              <Text style={styles.subtitle}>Actors</Text>
+              {movie.actors.map(actor => (
+                <Text key={actor} style={styles.text}>
+                  {actor}
+                </Text>
+              ))}
+            </View>
+          </>
+        ) : (
+          <Text>Loading...</Text>
+        )}
       </ScrollView>
     </SafeAreaView>
   );

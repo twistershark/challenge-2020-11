@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import {
   TouchableOpacity,
   View,
@@ -113,47 +113,56 @@ const Dashboard: React.FC = () => {
         />
       </View>
 
-      <Text style={styles.foundMovies}>
-        {`We found ${totalResults} movies:`}
-      </Text>
+      {movies.length ? (
+        <>
+          <Text style={styles.foundMovies}>
+            {`We found ${totalResults} movies:`}
+          </Text>
 
-      <FlatList
-        style={styles.moviesList}
-        data={movies}
-        onEndReached={() => findMovies(searchValue)}
-        onEndReachedThreshold={0.1}
-        ListFooterComponent={renderFooter}
-        keyExtractor={(movie, index) => {
-          return movie.id + index;
-        }}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            key={item.id}
-            onPress={() => navigation.navigate('MovieDetail', { id: item.id })}
-            style={styles.movieCard}
-          >
-            <Image
-              style={styles.moviePoster}
-              source={{
-                uri: `${item.poster}`,
-              }}
-            />
-            <View style={styles.movieInfo}>
-              <View style={styles.titleWrapper}>
-                <Text style={styles.movieTitle}>{item.title}</Text>
-                <Icon
-                  style={styles.star}
-                  name="star-outline"
-                  size={25}
-                  color="#B7B7CC"
+          <FlatList
+            style={styles.moviesList}
+            data={movies}
+            onEndReached={() => findMovies(searchValue)}
+            onEndReachedThreshold={0.1}
+            ListFooterComponent={renderFooter}
+            keyExtractor={(movie, index) => {
+              return movie.id + index;
+            }}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                key={item.id}
+                onPress={() =>
+                  navigation.navigate('MovieDetail', { id: item.id })}
+                style={styles.movieCard}
+              >
+                <Image
+                  style={styles.moviePoster}
+                  source={{
+                    uri: `${item.poster}`,
+                  }}
                 />
-              </View>
+                <View style={styles.movieInfo}>
+                  <View style={styles.titleWrapper}>
+                    <Text style={styles.movieTitle}>{item.title}</Text>
+                    <Icon
+                      style={styles.star}
+                      name="star-outline"
+                      size={25}
+                      color="#B7B7CC"
+                    />
+                  </View>
 
-              <Text style={styles.movieYear}>{item.year}</Text>
-            </View>
-          </TouchableOpacity>
-        )}
-      />
+                  <Text style={styles.movieYear}>{item.year}</Text>
+                </View>
+              </TouchableOpacity>
+            )}
+          />
+        </>
+      ) : (
+        <Text style={styles.noMoviesText}>
+          You haven't searched for a movie yet!
+        </Text>
+      )}
     </SafeAreaView>
   );
 };
@@ -295,16 +304,12 @@ const styles = EStyleSheet.create({
     fontWeight: 'bold',
   },
 
-  noPrayersText: {
-    paddingTop: 0,
-    paddingBottom: 0,
-    paddingRight: '1.5rem',
-    paddingLeft: '1.5rem',
-    marginTop: '2rem',
-    fontSize: '1rem',
-    fontFamily: 'Roboto-Bold',
+  noMoviesText: {
+    marginTop: '4rem',
+    fontSize: '1.25rem',
+    fontWeight: 'bold',
     textAlign: 'center',
-    color: 'red',
+    color: '#B7B7CC',
   },
 
   loading: {
