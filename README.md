@@ -5,7 +5,7 @@
 
 
 <p align="center">
-  <img src="./assets/app.gif" alt="MovieFinder" width="300px">
+  <img src="./assets/moviefinder.gif" alt="MovieFinder" width="300px">
 </p>
 
 ---
@@ -24,12 +24,12 @@
 
 Desenvolvi essa aplicação como desafio técnico da Alfred. Seu principal objetivo é poder buscar por filmes e favoritar seus preferidos. A aplicação segue os seguintes requisitos:
 
-- Permite a busca por filmes
+- Permite a busca por filmes (utilizei o Axios para as requisições)
 - Lista os filmes encontrados
-- Permite escolher filmes como favoritos
+- Permite escolher filmes como favoritos (Utilizei Context API para gerenciar os favoritos)
 - Permite remover um filme dos favoritos
 - Lista os filmes favoritos
-- Favoritos são salvos e não são perdidos quando a aplicação é fechada. 
+- Favoritos são salvos e não são perdidos quando a aplicação é fechada. (Utilizei o AsyncStorage para guardar os dados de favoritos).
 
 ---
 
