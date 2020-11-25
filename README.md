@@ -13,10 +13,10 @@
 
 - [Sobre](#-sobre)
 - [Tecnologias](#-tecnologias)
-- [Pré requisitos](#-pre-requisitos)
+- [Pré requisitos](#-pré-requisitos)
 - [Como usar](#-como-usar)
 - [Autor](#-autor)
-- [Contribuição](#-contribuicao)
+- [Contribuição](#-contribuição)
 - [Licensa](#-licensa)
 ---
 

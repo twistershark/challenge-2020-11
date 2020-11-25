@@ -18,7 +18,7 @@ const Favorites: React.FC = () => {
 
   const navigation = useNavigation();
   return (
-    <SafeAreaView>
+    <SafeAreaView style={{ backgroundColor: '#fff', flex: 1}}>
       <View style={styles.header}>
         <Icon
           onPress={() => navigation.navigate('Dashboard')}
