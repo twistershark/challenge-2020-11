@@ -5,6 +5,7 @@ import React, {
   useEffect,
   useState,
 } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import api from '../services/api';
 
@@ -37,8 +38,33 @@ const MovieProvider: React.FC = ({ children }) => {
 
   const [favorites, setFavorites] = useState<Movie[]>([]);
   const [favoritesID, setFavoritesID] = useState<string[]>([]);
-
   const [loading, setLoading] = useState(false);
+
+  const loadData = useCallback(async () => {
+    try {
+      const loadedFavorites = await AsyncStorage.getItem(
+        '@MovieFinder:favorites',
+      );
+
+      if (loadedFavorites !== null) {
+        setFavorites(JSON.parse(loadedFavorites));
+      }
+
+      const loadedFavoritesIDs = await AsyncStorage.getItem(
+        '@MovieFinder:favoritesIDs',
+      );
+
+      if (loadedFavoritesIDs !== null) {
+        setFavoritesID(JSON.parse(loadedFavoritesIDs));
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
   const findMovies = useCallback(
     async movieName => {
@@ -66,15 +92,38 @@ const MovieProvider: React.FC = ({ children }) => {
     [movies, page, favoritesID],
   );
 
+  const saveData = useCallback(async () => {
+    await AsyncStorage.setItem(
+      '@MovieFinder:favorites',
+      JSON.stringify(favorites),
+    );
+
+    await AsyncStorage.setItem(
+      '@MovieFinder:favoritesIDs',
+      JSON.stringify(favoritesID),
+    );
+  }, [favoritesID, favorites]);
+
   const setFavorite = useCallback(
     (m: Movie, favorite: boolean) => {
       if (!favorite) {
-        setFavoritesID([...favoritesID, m.id]);
-        setFavorites([...favorites, m]);
-      } else {
-        setFavorites(favorites.filter(fav => fav.id !== m.id));
+        const updatedFavoritesID = favoritesID;
+        updatedFavoritesID.push(m.id);
+        setFavoritesID(updatedFavoritesID);
 
-        setFavoritesID(favoritesID.filter(id => id !== m.id));
+        const updatedFavorites = favorites;
+        updatedFavorites.push(m);
+        setFavorites(updatedFavorites);
+      } else {
+        const favoritesIndex = favorites.findIndex(fav => fav.id === m.id);
+        const updatedFavorites = favorites;
+        updatedFavorites.splice(favoritesIndex, 1);
+        setFavorites(updatedFavorites);
+
+        const favoritesIDIndex = favoritesID.findIndex(id => id === m.id);
+        const updatedIDs = favoritesID;
+        updatedIDs.splice(favoritesIDIndex, 1);
+        setFavoritesID(updatedIDs);
       }
 
       const data = {
@@ -86,8 +135,10 @@ const MovieProvider: React.FC = ({ children }) => {
       };
 
       setMovies(movies.map(i => (i.id === data.id ? data : i)));
+
+      saveData();
     },
-    [movies, favorites, favoritesID],
+    [movies, favorites, favoritesID, saveData],
   );
 
   const handleSetPage = useCallback(() => {

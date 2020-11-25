@@ -9,7 +9,6 @@ import {
   FlatList,
   ActivityIndicator,
 } from 'react-native';
-import ActionButton from 'react-native-action-button';
 
 import EStyleSheet from 'react-native-extended-stylesheet';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -104,8 +103,7 @@ const Dashboard: React.FC = () => {
               <TouchableOpacity
                 key={item.id}
                 onPress={() =>
-                  navigation.navigate('MovieDetail', { id: item.id })
-                }
+                  navigation.navigate('MovieDetail', { id: item.id })}
                 style={styles.movieCard}
               >
                 <Image
@@ -137,15 +135,14 @@ const Dashboard: React.FC = () => {
           You haven't searched for a movie yet!
         </Text>
       )}
-      <ActionButton
-        buttonColor="#ffd88f"
-        offsetX={10}
-        offsetY={10}
-        renderIcon={() => (
-          <Icon name="star" style={{ fontSize: 20, color: '#224358' }} />
-        )}
-        onPress={() => navigation.navigate('Favorites')}
-      />
+      <View style={styles.fab}>
+        <Icon
+          name="star"
+          size={24}
+          color="#ffd88f"
+          onPress={() => navigation.navigate('Favorites')}
+        />
+      </View>
     </SafeAreaView>
   );
 };
@@ -293,6 +290,18 @@ const styles = EStyleSheet.create({
 
   loading: {
     marginBottom: '3rem',
+  },
+
+  fab: {
+    position: 'absolute',
+    bottom: 10,
+    right: 10,
+    backgroundColor: '#224358',
+    height: 50,
+    width: 50,
+    borderRadius: 25,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 
