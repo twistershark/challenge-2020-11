@@ -1,28 +1,95 @@
-# Desafio Alfred: Novembro/2020 
-
-Neste desafio você terá que implementar um sistema mobile com React Native onde será possível buscar por filmes e series utilizando a API (http://www.omdbapi.com/). A sua solução deve:
-
-- Permitir a busca por filmes
-- Listar os filmes encontrados
-- Permitir escolher filmes favoritos
-- Permitir remover um filme dos favoritos
-- Listar os filmes favoritos
-- Caso o aplicativo seja fechado, os favoritos não devem ser perdidos
-
-Para ajudar na concepção do layout, estamos disponibilizando abaixo um print de um aplicativo que atende os requisitos listados. Use sua criatividade para criar um layout novo, ou reproduza o leyout proposto, se preferir.
-
-Para facilitar um pouco mais as coisas, já deixamos separada uma chave de acesso para a API (ou você pode criar a sua também):
-
+<h1 align="center">Bem-vindo ao Movie Finder🎥</h1>
 <p align="center">
-  <img src="./cinema-app.gif" alt="cinema-app" width="200px">
+  <img alt="Capa" src="https://github.com/twistershark/challenge-2020-11/blob/main/assets/capa.png" />
 </p>
 
-Chave de API: 925eba28
-Exemplo requisição: GET http://www.omdbapi.com/?apikey=925eba28&s=batman
 
-Você pode criar uma aplicação nativa, ou com expo (sdk39+).
+<p align="center">
+  <img src="./assets/app.gif" alt="MovieFinder" width="300px">
+</p>
 
-## Entrega da sua solução
-Altere o arquivo README.md descrevendo o que o aplicativo faz e que tipo de premissas foram adotadas para desenvolver as funcionalidades. Adicione pelo menos uma imagem do aplicativo, pode ser uma imagem estática ou um gif do aplicativo sendo utilizado. Para entregar o projeto, faça um fork neste repositório e envie o link do seu repositório para o responsável quando o projeto estiver finalizado.
+---
+# 📑 Índice
 
-Ficamos no aguardo da entrega da sua solução e desejamos boa sorte ;)
+- [Sobre](#-sobre)
+- [Tecnologias](#-tecnologias)
+- [Pré requisitos](#-pre-requisitos)
+- [Como usar](#-como-usar)
+- [Autor](#-autor)
+- [Contribuição](#-contribuicao)
+- [Licensa](#-licensa)
+---
+
+## 📋 Sobre
+
+Desenvolvi essa aplicação como desafio técnico da Alfred. Seu principal objetivo é poder buscar por filmes e favoritar seus preferidos. A aplicação segue os seguintes requisitos:
+
+- Permite a busca por filmes
+- Lista os filmes encontrados
+- Permite escolher filmes como favoritos
+- Permite remover um filme dos favoritos
+- Lista os filmes favoritos
+- Favoritos são salvos e não são perdidos quando a aplicação é fechada. 
+
+---
+
+## 🚀 Tecnologias
+
+- [React Native](https://reactnative.dev/)
+- [Axios](https://www.npmjs.com/package/axios)
+- [Extended StyleSheet](https://github.com/vitalets/react-native-extended-stylesheet)
+
+---
+
+## 🔧 Pré Requisitos
+
+- NodeJS
+- Yarn
+- Emulador ou dispositivo físico para executar o projeto
+
+---
+## 🌟 Como usar
+
+```sh
+
+  # Clone o repositório
+  $ git clone https://github.com/twistershark/challenge-2020-11.git
+
+  # Entre na pasta do projeto
+  $ cd challenge-2020-11
+
+  # Instale todas as dependências
+  $ yarn
+
+  # Abra uma nova aba do terminal para cada comando a seguir:
+
+  # Para iniciar o React Native Metro
+  $ yarn start
+  
+  # Para iniciar o Android Emulator ou iOS Simulator / Dispositivo Físico
+  $ yarn android / yarn ios
+
+```
+
+
+## 🤓 Autor
+
+👤 **Paulo Victor da Silva**
+
+* Github: [@twistershark](https://github.com/twistershark)
+* LinkedIn: [@paulovictorsilva](https://linkedin.com/in/paulovictorsilva)
+
+## Me ajude!
+
+Dê um ⭐️ se esse projeto te ajudou!
+
+## 🤝 Contribuição
+
+Fique a vontade para contribuir para esse projeto. Toda ajuda é bem-vinda!
+
+---
+
+## 📃 Licensa
+
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE) file for details
+
