@@ -1,4 +1,10 @@
-import React, { createContext, useCallback, useContext, useState } from 'react';
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
 
 import api from '../services/api';
 
@@ -19,7 +25,7 @@ interface MovieProviderData {
   favorites: Movie[];
   loading: boolean;
   findMovies(movieName: string): void;
-  setFavorite(m: Movie): void;
+  setFavorite(m: Movie, favorite: boolean): void;
 }
 
 const MovieContext = createContext<MovieProviderData>({} as MovieProviderData);
@@ -30,7 +36,7 @@ const MovieProvider: React.FC = ({ children }) => {
   const [page, setPage] = useState(1);
 
   const [favorites, setFavorites] = useState<Movie[]>([]);
-  const [favoritesID, setFavoritesID] = useState<number[]>([]);
+  const [favoritesID, setFavoritesID] = useState<string[]>([]);
 
   const [loading, setLoading] = useState(false);
 
@@ -49,7 +55,7 @@ const MovieProvider: React.FC = ({ children }) => {
         title: movie.Title,
         year: movie.Year,
         poster: movie.Poster,
-        isFavorite: false,
+        isFavorite: favoritesID.includes(movie.imdbID),
       }));
 
       setMovies([...movies, ...newMovies]);
@@ -57,10 +63,32 @@ const MovieProvider: React.FC = ({ children }) => {
       setLoading(false);
       setPage(page + 1);
     },
-    [movies, page],
+    [movies, page, favoritesID],
   );
 
-  const setFavorite = useCallback((m: Movie) => {}, []);
+  const setFavorite = useCallback(
+    (m: Movie, favorite: boolean) => {
+      if (!favorite) {
+        setFavoritesID([...favoritesID, m.id]);
+        setFavorites([...favorites, m]);
+      } else {
+        setFavorites(favorites.filter(fav => fav.id !== m.id));
+
+        setFavoritesID(favoritesID.filter(id => id !== m.id));
+      }
+
+      const data = {
+        id: m.id,
+        title: m.title,
+        year: m.year,
+        poster: m.poster,
+        isFavorite: !favorite,
+      };
+
+      setMovies(movies.map(i => (i.id === data.id ? data : i)));
+    },
+    [movies, favorites, favoritesID],
+  );
 
   const handleSetPage = useCallback(() => {
     setPage(1);

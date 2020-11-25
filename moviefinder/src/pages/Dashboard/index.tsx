@@ -27,6 +27,7 @@ const Dashboard: React.FC = () => {
     loading,
     findMovies,
     totalResults,
+    setFavorite,
   } = useMovie();
 
   const [searchValue, setSearchValue] = useState('');
@@ -118,9 +119,10 @@ const Dashboard: React.FC = () => {
                     <Text style={styles.movieTitle}>{item.title}</Text>
                     <Icon
                       style={styles.star}
-                      name="star-outline"
+                      name={item.isFavorite === true ? 'star' : 'star-outline'}
                       size={25}
-                      color="#B7B7CC"
+                      color={item.isFavorite === true ? '#ffd88f' : '#B7B7CC'}
+                      onPress={() => setFavorite(item, item.isFavorite)}
                     />
                   </View>
 
@@ -226,10 +228,6 @@ const styles = EStyleSheet.create({
 
     marginTop: '2rem',
     paddingLeft: '1.25rem',
-  },
-
-  prayersContainer: {
-    marginTop: '2.5rem',
   },
 
   moviesList: {
